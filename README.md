@@ -1,2 +1,2 @@
-# canvas-boilerplate
-Boilerplate for JavaScript canvas projects.
+# canvas-tetris
+Tetris created using JavaScript canvas.
