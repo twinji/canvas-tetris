@@ -40,7 +40,8 @@ var nextPiece;
 
 // update stuff
 var frameNumber = 0;
-var framesUntilUpdate = 10;
+var controlFrameNumber = 0;
+var framesUntilUpdate = 60;
 
 // keyboard controls
 var up = 38, 
@@ -97,9 +98,8 @@ function init(c) {
 
 function update() {
 
-    console.log(grid);
-
     frameNumber++;
+    controlFrameNumber++;
 
     // set next piece if required
     if (nextPiece == null) {
@@ -113,7 +113,10 @@ function update() {
         piecePosition = new Vector2(Math.round(Math.random() * (grid[0].length - 1 - currentPiece[0].length)), 0);
     }
 
+    // updates that only occur every 60 fromes
     if (frameNumber >= framesUntilUpdate) {
+
+        // reset frame number
         frameNumber = 0;
 
         // move logic
@@ -140,10 +143,27 @@ function update() {
             currentPiece = null;
         }
     }
+
+    // updates that only occur every 20 fromes
+    if (controlFrameNumber >= framesUntilUpdate / 20) {
+
+        // reset frame number
+        controlFrameNumber = 0;
+
+        // updates that only occur every 60 fromes
+        if (key[right]) piecePosition.x++;
+        if (key[left]) piecePosition.x--;
+        if (key[down]) {
+            piecePosition.y++
+        }
+
+    }
+
 }
 
 function render(c) {
 
+    // clear previous frame
     c.clearRect(0, 0, WIDTH, HEIGHT);
     
     // draw placed pieces
@@ -163,7 +183,6 @@ function render(c) {
             }
         }
     }
-    // drawBlock(c, piecePosition.x, piecePosition.y, rgb(200, 200, 200));
 
     // draw grid
     c.strokeStyle = rgb(16, 16, 16);
