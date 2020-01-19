@@ -3,7 +3,7 @@ const WIDTH = window.innerWidth,
       HEIGHT = window.innerHeight;
 
 // grid dimensions and values
-var gridCellSize = 70;
+var gridCellSize = 50;
 var gridRows;
 var gridColumns;
 var gridWidth;
@@ -20,7 +20,7 @@ var pieces = [
         [1, 2, 1, 1]
     ],
     [
-        [1, 1],
+        [2, 1],
         [1, 1]
     ],
     [
@@ -30,6 +30,11 @@ var pieces = [
     [
         [1, 1, 0],
         [0, 2, 1]
+    ],
+    [
+        [0, 1, 0],
+        [1, 2, 1],
+        [0, 1, 0]
     ]
 ];
 
@@ -40,8 +45,9 @@ var nextPiece;
 
 // update stuff
 var frameNumber = 0;
-var controlFrameNumber = 0;
 var framesUntilUpdate = 60;
+var controlTimer = 0;
+var controlIntervalLength = framesUntilUpdate / 10;
 
 // keyboard controls
 var up = 38, 
@@ -103,7 +109,10 @@ function init(c) {
 function update() {
 
     frameNumber++;
-    controlFrameNumber++;
+
+    if (controlTimer > 0) {
+        controlTimer--;
+    }
 
     // set next piece if required
     if (nextPiece == null) {
@@ -114,7 +123,7 @@ function update() {
     if (currentPiece == null) {
         currentPiece = nextPiece;
         nextPiece = null;
-        piecePosition = new Vector2(Math.round(Math.random() * (grid[0].length - 1 - currentPiece[0].length)), 0);
+        piecePosition = new Vector2(Math.round(gridColumns / 2), 0);
     }
 
     // updates that only occur every 60 fromes
@@ -143,33 +152,35 @@ function update() {
         }
     }
 
-    // updates that only occur every 20 fromes
-    if (controlFrameNumber >= framesUntilUpdate / 20) {
+    // input processing
+    if (key[up] || key[down] || key[left] || key[right] || key[z] || key[x] || key[space]) {
 
-        // reset frame number
-        controlFrameNumber = 0;
+        if (controlTimer <= 0) {
 
-        // check if piece currently in play
-        if (piecePosition != null && currentPiece != null) {
+            // reset frame number
+            controlTimer = controlIntervalLength;
 
-            // change in position
-            var delta = new Vector2(0, 0);
+            // check if piece currently in play
+            if (piecePosition != null && currentPiece != null) {
 
-            // updates that only occur every 60 fromes
-            if (key[right]) delta.x++;
-            if (key[left]) delta.x--;
-            if (key[down]) delta.y++;
-            if (key[up]) {}
+                // change in position
+                var delta = new Vector2(0, 0);
 
-            if (currentPiece != null) {
-                if (key[z]) currentPiece = rotate(currentPiece, -1);
-                if (key[x]) currentPiece = rotate(currentPiece, 1);
-                
-            }
+                // updates that only occur every 60 fromes
+                if (key[right]) delta.x++;
+                if (key[left]) delta.x--;
+                if (key[down]) delta.y++;
+                if (key[up]) {}
 
-            if (!isOverlapping(currentPiece, delta)) {
-                piecePosition.x += delta.x;
-                piecePosition.y += delta.y;
+                if (currentPiece != null) {
+                    if (key[z]) currentPiece = rotate(currentPiece, -1);
+                    if (key[x]) currentPiece = rotate(currentPiece, 1);
+                }
+
+                if (!isOverlapping(currentPiece, delta)) {
+                    piecePosition.x += delta.x;
+                    piecePosition.y += delta.y;
+                }
             }
         }
     }
@@ -316,7 +327,6 @@ function generateNextPiece() {
     }
 
     return nextPiece;
-
 }
 
 function render(c) {
