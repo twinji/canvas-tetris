@@ -3,7 +3,7 @@ const WIDTH = window.innerWidth,
       HEIGHT = window.innerHeight;
 
 // grid dimensions and values
-var gridCellSize = 50;
+var gridCellSize = 60;
 var gridRows;
 var gridColumns;
 var gridWidth;
@@ -86,7 +86,7 @@ window.onload = function(e) {
 function init(c) {
 
     // initialize grid
-    gridWidth = WIDTH * 3 / 4;
+    gridWidth = 800;
     gridHeight = HEIGHT;
     gridRows = Math.floor(gridHeight / gridCellSize);
     gridColumns = Math.floor(gridWidth / gridCellSize);
@@ -119,6 +119,12 @@ function update() {
         currentPiece = nextPiece;
         nextPiece = null;
         piecePosition = new Vector2(Math.round(gridColumns / 2), 0);
+
+        // check if game over
+        if (isOverlapping(currentPiece, new Vector2(0, 0))) {
+            alert("Game Over");
+            location.reload();
+        }
     }
 
     // updates that only occur every 60 fromes
@@ -313,7 +319,6 @@ function generateNextPiece() {
 
     // randomly select an available piece
     var nextPiece = pieces[Math.round(Math.random() * (pieces.length - 1))];
-    console.log(nextPiece);
 
     // randomly rotate and mirror several times
     for (var i = 0; i < 3; i++) {
