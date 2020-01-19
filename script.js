@@ -47,7 +47,10 @@ var framesUntilUpdate = 60;
 var up = 38, 
     down = 40, 
     right = 39, 
-    left = 37;
+    left = 37,
+    z = 90,
+    x = 88;
+    space = 32;
 
 var key = new Array();
 document.addEventListener("keydown", function(e) {key[e.keyCode] = true;});
@@ -106,11 +109,12 @@ function update() {
 
          // randomly select an available piece
         nextPiece = pieces[Math.round(Math.random() * (pieces.length - 1))];
+        console.log(nextPiece);
 
         // randomly rotate and mirror several times
         for (var i = 0; i < 3; i++) {
-            if (Math.random() >= 0.5) rotate(nextPiece, Math.round(Math.random() * 2 - 1));
-            if (Math.random() >= 0.5) mirror(nextPiece, new Vector2(Math.round(Math.random()), Math.round(Math.random())));
+            if (Math.random() >= 0.5) nextPiece = rotate(nextPiece, Math.round(Math.random() * 2 - 1));
+            if (Math.random() >= 0.5) nextPiece = mirror(nextPiece, new Vector2(Math.round(Math.random()), Math.round(Math.random())));
         }
     }
 
@@ -129,8 +133,6 @@ function update() {
 
         // move delta
         var delta = new Vector2(0, 1);
-
-        // console.log(grid);
 
         // place piece on grid if required
         if (isOverlapping(delta)) {
@@ -165,6 +167,13 @@ function update() {
             if (key[right]) delta.x++;
             if (key[left]) delta.x--;
             if (key[down]) delta.y++;
+            if (key[up]) {}
+
+            if (currentPiece != null) {
+                if (key[z]) currentPiece = rotate(currentPiece, -1);
+                if (key[x]) currentPiece = rotate(currentPiece, 1);
+                
+            }
 
             if (!isOverlapping(delta)) {
                 piecePosition.x += delta.x;
@@ -205,9 +214,12 @@ function isOverlapping(delta) {
 function rotate(piece, direction) {
 
     var pivot;
+    var rotatedPiece;
+
+    if (piece == null) return null;
 
     // find pivot origin
-    for(var i = 0; i < piece.length; i++) {
+    for (var i = 0; i < piece.length; i++) {
         var pivotIndex = piece[i].indexOf(2);
         if (pivotIndex != -1) {
             pivot = new Vector2(pivotIndex, i);
@@ -221,11 +233,29 @@ function rotate(piece, direction) {
     }
 
     // determine new 2D array dimensions
+    rotatedPiece = new Array(piece[0].length);
+    for (var i = 0; i < rotatedPiece.length; i++) {
+        rotatedPiece[i] = new Array(piece.length);
+    }
 
+    // populated new 2D array
+    for (var i = 0; i < piece.length; i++) {
+        for(var j = piece[i].length - 1; j >= 0; j--) {
+            rotatedPiece[j][i] = piece[i][piece[i].length - 1 - j];
+        }
+    }
+
+    if (direction > 0) {
+        rotatedPiece = mirror(rotatedPiece, new Vector2(1, 1));
+    }
+
+    return rotatedPiece;
 }
 
 // function to mirror a piece
 function mirror(piece, direction) {
+
+    if (piece == null) return null;
 
     // reverse along y axis
     if (direction.y != 0) {
@@ -238,6 +268,8 @@ function mirror(piece, direction) {
             piece[i].reverse();
         }
     }
+
+    return piece;
 }
 
 // function to collapse complete rows
@@ -252,6 +284,7 @@ function collapse() {
         for (var j = 0; j < grid[i].length; j++) {
             if (grid[i][j] != 1) {
                 filled = false;
+                break;
             }
         }
         
@@ -274,13 +307,16 @@ function collapse() {
 
 function render(c) {
 
-    // clear previous frame
-    c.clearRect(0, 0, WIDTH, HEIGHT);
+    // screen fade effect
+    c.fillStyle = "black";
+    c.globalAlpha = 0.3;
+    c.fillRect(0, 0, WIDTH, HEIGHT);
+    c.globalAlpha = 1;
     
     // draw placed pieces
     for (var i = 0; i < grid.length; i++) {
         for (var j = 0; j < grid[i].length; j++) {
-            drawBlock(c, j, i, grid[i][j] >= 1 ? "grey" : "black");
+            drawBlock(c, j, i, grid[i][j] >= 1 ? "grey" : "transparent");
         }
     }
 
