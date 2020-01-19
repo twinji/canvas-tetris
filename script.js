@@ -103,7 +103,15 @@ function update() {
 
     // set next piece if required
     if (nextPiece == null) {
+
+         // randomly select an available piece
         nextPiece = pieces[Math.round(Math.random() * (pieces.length - 1))];
+
+        // randomly rotate and mirror several times
+        for (var i = 0; i < 3; i++) {
+            if (Math.random() >= 0.5) rotate(nextPiece, Math.round(Math.random() * 2 - 1));
+            if (Math.random() >= 0.5) mirror(nextPiece, new Vector2(Math.round(Math.random()), Math.round(Math.random())));
+        }
     }
 
     // set current piece if required
@@ -194,13 +202,13 @@ function isOverlapping(delta) {
 }
 
 // function to rotate current piece
-function rotate(direction) {
+function rotate(piece, direction) {
 
     var pivot;
 
     // find pivot origin
-    for(var i = 0; i < currentPiece.length; i++) {
-        var pivotIndex = currentPiece[i].indexOf(2);
+    for(var i = 0; i < piece.length; i++) {
+        var pivotIndex = piece[i].indexOf(2);
         if (pivotIndex != -1) {
             pivot = new Vector2(pivotIndex, i);
             break;
@@ -214,6 +222,22 @@ function rotate(direction) {
 
     // determine new 2D array dimensions
 
+}
+
+// function to mirror a piece
+function mirror(piece, direction) {
+
+    // reverse along y axis
+    if (direction.y != 0) {
+        piece.reverse();
+    }
+
+    // reverse along x axis
+    if (direction.x != 0) {
+        for (var i = 0; i < piece.length; i++) {
+            piece[i].reverse();
+        }
+    }
 }
 
 // function to collapse complete rows
