@@ -135,7 +135,7 @@ function update() {
         var delta = new Vector2(0, 1);
 
         // place piece on grid if required
-        if (isOverlapping(delta)) {
+        if (isOverlapping(currentPiece, delta)) {
             for (var i = 0; i < currentPiece.length; i++) {
                 for (var j = 0; j < currentPiece[i].length; j++) {
                     if (currentPiece[i][j] >= 1) {
@@ -175,7 +175,7 @@ function update() {
                 
             }
 
-            if (!isOverlapping(delta)) {
+            if (!isOverlapping(currentPiece, delta)) {
                 piecePosition.x += delta.x;
                 piecePosition.y += delta.y;
             }
@@ -184,21 +184,21 @@ function update() {
 }
 
 // function for checking collisions
-function isOverlapping(delta) {
+function isOverlapping(piece, delta) {
 
     // check bounds of grid
     if (
         piecePosition.x + delta.x < 0 
-        || piecePosition.x + currentPiece[0].length + delta.x > grid[0].length
-        || piecePosition.y + currentPiece.length + delta.y > grid.length
+        || piecePosition.x + piece[0].length + delta.x > grid[0].length
+        || piecePosition.y + piece.length + delta.y > grid.length
     ) {
         return true;
     }
 
     // check surrounding blocks
-    for (var i = 0; i < currentPiece.length; i++) {
-        for (var j = 0; j < currentPiece[i].length; j++) {
-            if (currentPiece[i][j] >= 1) {
+    for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[i].length; j++) {
+            if (piece[i][j] >= 1) {
                 if (grid[piecePosition.y + i + delta.y][piecePosition.x + j + delta.x] == 1) {
                     return true;
                 }
@@ -245,8 +245,13 @@ function rotate(piece, direction) {
         }
     }
 
+    // mirror to rotate in other direction
     if (direction > 0) {
         rotatedPiece = mirror(rotatedPiece, new Vector2(1, 1));
+    }
+
+    if (isOverlapping(rotatedPiece, new Vector2(0, 0))) {
+        return piece;
     }
 
     return rotatedPiece;
