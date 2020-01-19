@@ -3,7 +3,7 @@ const WIDTH = window.innerWidth,
       HEIGHT = window.innerHeight;
 
 // grid dimensions and values
-var gridCellSize = 50;
+var gridCellSize = 70;
 var gridRows;
 var gridColumns;
 var gridWidth;
@@ -96,6 +96,7 @@ function init(c) {
 
     // initialize game variables
     piecePosition = new Vector2(0, 0);
+    nextPiece = generateNextPiece();
 
 }
 
@@ -106,16 +107,7 @@ function update() {
 
     // set next piece if required
     if (nextPiece == null) {
-
-         // randomly select an available piece
-        nextPiece = pieces[Math.round(Math.random() * (pieces.length - 1))];
-        console.log(nextPiece);
-
-        // randomly rotate and mirror several times
-        for (var i = 0; i < 3; i++) {
-            if (Math.random() >= 0.5) nextPiece = rotate(nextPiece, Math.round(Math.random() * 2 - 1));
-            if (Math.random() >= 0.5) nextPiece = mirror(nextPiece, new Vector2(Math.round(Math.random()), Math.round(Math.random())));
-        }
+        nextPiece = generateNextPiece();
     }
 
     // set current piece if required
@@ -308,6 +300,23 @@ function collapse() {
             grid.unshift(new Array(gridColumns));
         }
     }
+}
+
+// generates a new piece
+function generateNextPiece() {
+
+    // randomly select an available piece
+    var nextPiece = pieces[Math.round(Math.random() * (pieces.length - 1))];
+    console.log(nextPiece);
+
+    // randomly rotate and mirror several times
+    for (var i = 0; i < 3; i++) {
+        if (Math.random() >= 0.5) nextPiece = rotate(nextPiece, Math.round(Math.random() * 2 - 1));
+        if (Math.random() >= 0.5) nextPiece = mirror(nextPiece, new Vector2(Math.round(Math.random()), Math.round(Math.random())));
+    }
+
+    return nextPiece;
+
 }
 
 function render(c) {
