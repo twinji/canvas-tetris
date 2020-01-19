@@ -14,10 +14,10 @@ var grid;
 var pieces = [
     [
         [0, 1, 0],
-        [1, 1, 1]
+        [1, 2, 1]
     ],
     [
-        [1, 1, 1, 1]
+        [1, 2, 1, 1]
     ],
     [
         [1, 1],
@@ -25,11 +25,11 @@ var pieces = [
     ],
     [
         [1, 0, 0],
-        [1, 1, 1]
+        [1, 2, 1]
     ],
     [
         [1, 1, 0],
-        [0, 1, 1]
+        [0, 2, 1]
     ]
 ];
 
@@ -135,7 +135,7 @@ function update() {
             piecePosition.y--;
             for (var i = 0; i < currentPiece.length; i++) {
                 for (var j = 0; j < currentPiece[i].length; j++) {
-                    if (currentPiece[i][j] == 1) {
+                    if (currentPiece[i][j] >= 1) {
                         grid[piecePosition.y + i][piecePosition.x + j] = 1;
                     }
                 }
@@ -150,14 +150,40 @@ function update() {
         // reset frame number
         controlFrameNumber = 0;
 
-        // updates that only occur every 60 fromes
-        if (key[right]) piecePosition.x++;
-        if (key[left]) piecePosition.x--;
-        if (key[down]) {
-            piecePosition.y++
-        }
+        // check if piece currently in play
+        if (piecePosition != null && currentPiece != null) {
 
+            // change in position
+            var delta = new Vector2(0, 0);
+
+            // updates that only occur every 60 fromes
+            if (key[right]) delta.x++;
+            if (key[left]) delta.x--;
+            if (key[down]) delta.y++;
+
+            if (!isOverlapping(delta)) {
+                piecePosition.x += delta.x;
+                piecePosition.y += delta.y;
+            }
+        }
     }
+}
+
+// function for checking collisions
+function isOverlapping(delta) {
+
+    // check bounds of grid
+    if (
+        piecePosition.x + delta.x < 0 
+        || piecePosition.x + currentPiece[0].length + delta.x > grid[0].length
+        || piecePosition.y + currentPiece.length + delta.y > grid.length
+    ) {
+        return true;
+    }
+}
+
+// function to rotate current piece
+function rotate(direction) {
 
 }
 
@@ -169,7 +195,7 @@ function render(c) {
     // draw placed pieces
     for (var i = 0; i < grid.length; i++) {
         for (var j = 0; j < grid[i].length; j++) {
-            drawBlock(c, j, i, grid[i][j] == 1 ? "grey" : "black");
+            drawBlock(c, j, i, grid[i][j] >= 1 ? "grey" : "black");
         }
     }
 
@@ -177,7 +203,7 @@ function render(c) {
     if (currentPiece != null) {
         for (var i = 0; i < currentPiece.length; i++) {
             for (var j = 0; j < currentPiece[i].length; j++) {
-                if (currentPiece[i][j] == 1) {
+                if (currentPiece[i][j] >= 1) {
                     drawBlock(c, piecePosition.x + j, piecePosition.y + i, rgb(200, 200, 200));
                 }
             }
