@@ -119,20 +119,13 @@ function update() {
         // reset frame number
         frameNumber = 0;
 
-        // move logic
-        piecePosition.y++;
-        
-        // flag on whether to place piece
-        var placeOnGrid = false;
+        // move delta
+        var delta = new Vector2(0, 1);
 
-        // check bottom of grid
-        if (piecePosition.y + currentPiece.length > grid.length) {
-            placeOnGrid = true;
-        }
+        console.log(isOverlapping(delta));
 
         // place piece on grid if required
-        if (placeOnGrid) {
-            piecePosition.y--;
+        if (isOverlapping(delta)) {
             for (var i = 0; i < currentPiece.length; i++) {
                 for (var j = 0; j < currentPiece[i].length; j++) {
                     if (currentPiece[i][j] >= 1) {
@@ -141,6 +134,9 @@ function update() {
                 }
             }
             currentPiece = null;
+        } else {
+            piecePosition.x += delta.x;
+            piecePosition.y += delta.y;
         }
     }
 
@@ -180,10 +176,43 @@ function isOverlapping(delta) {
     ) {
         return true;
     }
+
+    // check surrounding blocks
+    for (var i = 0; i < currentPiece.length; i++) {
+        for (var j = 0; j < currentPiece[i].length; j++) {
+            if (currentPiece[i][j] >= 1) {
+                if (grid[piecePosition.y + i + delta.y][piecePosition.x + j + delta.x] == 1) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    // no collisions
+    return false;
 }
 
 // function to rotate current piece
 function rotate(direction) {
+
+    var pivot;
+
+    // find pivot origin
+    for(var i = 0; i < currentPiece.length; i++) {
+        var pivotIndex = currentPiece[i].indexOf(2);
+        if (pivotIndex != -1) {
+            pivot = new Vector2(pivotIndex, i);
+            break;
+        }
+    }
+
+    // leave if no pivot is found
+    if (pivot == null) {
+        return;
+    }
+
+    // determine new 2D array dimensions
+
 
 }
 
