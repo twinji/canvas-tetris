@@ -30,11 +30,6 @@ var pieces = [
     [
         [1, 1, 0],
         [0, 2, 1]
-    ],
-    [
-        [0, 1, 0],
-        [1, 2, 1],
-        [0, 1, 0]
     ]
 ];
 
@@ -362,6 +357,17 @@ function render(c) {
     }
     for (var i = 0; i <= grid[0].length; i++) {
         drawLine(c, i * gridCellSize, 0, i * gridCellSize, grid.length * gridCellSize, 1);
+    }
+
+    // draw next piece
+    if (nextPiece != null) {
+        for (var i = 0; i < nextPiece.length; i++) {
+            for (var j = 0; j < nextPiece[i].length; j++) {
+                if (nextPiece[i][j] >= 1) {
+                    drawBlock(c, gridColumns + 1 + j, 1 + i, rgb(200, 200, 200));
+                }
+            }
+        }
     }
 }
 
