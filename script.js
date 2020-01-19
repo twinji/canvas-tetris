@@ -122,7 +122,7 @@ function update() {
         // move delta
         var delta = new Vector2(0, 1);
 
-        console.log(isOverlapping(delta));
+        // console.log(grid);
 
         // place piece on grid if required
         if (isOverlapping(delta)) {
@@ -134,6 +134,7 @@ function update() {
                 }
             }
             currentPiece = null;
+            collapse();
         } else {
             piecePosition.x += delta.x;
             piecePosition.y += delta.y;
@@ -213,7 +214,38 @@ function rotate(direction) {
 
     // determine new 2D array dimensions
 
+}
 
+// function to collapse complete rows
+function collapse() {
+
+    // iterate over rows and determine rows to remove
+    var rowsToRemove = new Array();
+    for (var i = 0; i < grid.length; i++) {
+
+        // check if row is filled
+        var filled = true;
+        for (var j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] != 1) {
+                filled = false;
+            }
+        }
+        
+        if (filled) {
+            rowsToRemove.push(i);
+        }
+    }
+
+    // remove determined rows and add rows new to top
+    for (var i = 0; i < rowsToRemove.length; i++) {
+        grid[rowsToRemove[i]] = null;
+    }
+    for (var i = 0; i < grid.length; i++) {
+        if (grid[i] == null) {
+            grid.splice(i, 1);
+            grid.unshift(new Array(gridColumns));
+        }
+    }
 }
 
 function render(c) {
